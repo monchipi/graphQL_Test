@@ -1,0 +1,11 @@
+type Todo @goModel(model: "github.com/monchipi/ex-myserver/models.Todo"){
+    id: ID!
+    text: String!
+    isCompleted: Boolean!
+}
+
+input NewTodo @goModel(model: "github.com/monchipi/ex-myserver/models.NewTodo"){
+    Text: String!
+    UserId: String!
+}
+
