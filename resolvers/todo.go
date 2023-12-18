@@ -20,7 +20,7 @@ import (
 
 // CreateTodo is the resolver for the createTodo field.
 func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo) (*models.Todo, error) {
-	res, err := r.DB.Exec("INSERT INTO todos (text, isCompleted) VALUES (?, 0)", input.Text)
+	res, err := r.DB.Exec("INSERT INTO todos (text, isCompleted) VALUES (?, false)", input.Text)
 	if err != nil {
 		return nil, fmt.Errorf("DB Exec error: %v", err)
 	}
@@ -37,9 +37,29 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo)
 	}, nil
 }
 
+func (r *mutationResolver) DoneTodo(ctx context.Context, id int) (*models.Todo, error) {
+    // Update the isCompleted field in the database
+    _, err := r.DB.Exec("UPDATE todos SET isCompleted = true WHERE id = ?", id)
+
+    if err != nil {
+        return nil, fmt.Errorf("DB Exec error: %v", err)
+    }
+
+    // Optionally, retrieve the updated todo item from the database
+    // This step is necessary if you want to return the complete Todo object with updated fields
+    var todo models.Todo
+    err = r.DB.QueryRow("SELECT id, text, isCompleted FROM todos WHERE id = ?", id).Scan(&todo.ID, &todo.Text, &todo.IsCompleted)
+    if err != nil {
+        return nil, fmt.Errorf("DB QueryRow error: %v", err)
+    }
+
+    return &todo, nil
+}
+
+
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*models.Todo, error) {
-	rows, err := r.DB.Query("SELECT id, text, IsCompIsCompletedd From todos")
+	rows, err := r.DB.Query("SELECT id, text, IsCompleted From todos")
 	if err != nil {
 		return nil, err
 	}
