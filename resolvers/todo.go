@@ -37,6 +37,18 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input models.NewTodo)
 	}, nil
 }
 
+func (r *mutationResolver) DeleteTodo(ctx context.Context, id int) (bool, error) {
+    _, err := r.DB.Exec("DELETE FROM todos WHERE id = ?", id)
+
+    if err != nil {
+        return false, fmt.Errorf("DB Exec error: %v", err)
+    }
+
+    return true, nil
+}
+
+
+
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*models.Todo, error) {
 	rows, err := r.DB.Query("SELECT id, text, IsCompIsCompletedd From todos")

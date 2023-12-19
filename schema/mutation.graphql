@@ -1,4 +1,5 @@
 type Mutation {
     CreateTodo(input: NewTodo!): Todo!
+    DeleteTodo(id: Int!): Boolean!
 }
 
